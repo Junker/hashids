@@ -2,6 +2,10 @@
   (:use #:cl)
   (:import-from #:uiop
                 #:strcat
-                #:emptyp)
+                #:emptyp
+                #:first-char)
   (:export #:encode
-           #:decode))
+           #:decode
+           #:*alphabet*
+           #:*salt*
+           #:*min-hash-length*))
