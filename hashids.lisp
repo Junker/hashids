@@ -115,3 +115,28 @@
                 :do (setf ret (subseq ret (floor excess 2) (+ (floor excess 2) *min-hash-length*)))))
       ret)))
 
+(defun decode (hash)
+  "Restore a list of numbers from the passed `hash`"
+  (assert (and (stringp hash) (not (emptyp hash))))
+  (multiple-value-bind (alphabet seps guards)
+      (prepare)
+    (flet ((%split (str seps)
+             (setf str (reduce #'(lambda (h sep)
+                                   (substitute #\Space sep h))
+                               seps
+                               :initial-value str))
+             (uiop:split-string str :separator '(#\Space))))
+      (let* ((parts (%split hash guards))
+             (hashid (nth (if (member (length parts) '(2 3)) 1 0)
+                          parts)))
+        (when (string/= hashid "")
+          (let* ((lottery (aref hashid 0))
+                 (hash-parts (%split (subseq hashid 1) seps))
+                 (numbers (loop :for part :in hash-parts
+                                :for abet := alphabet :then rabet
+                                :for salt := (subseq (strcat (string lottery) *salt* abet)
+                                                     0 (length abet))
+                                :for rabet := (reorder abet salt)
+                                :collect (unhash part rabet))))
+            (when (string= hash (apply #'encode numbers))
+              numbers)))))))
