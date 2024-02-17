@@ -31,15 +31,11 @@
     (setf alphabet (reorder alphabet *salt*))
     (let ((guards-cnt (ceiling alpha-len +guards-ratio+)))
       (if (< alpha-len 3)
-          (progn
-            (setf guards (subseq seps 0 guards-cnt))
-            (setf seps (subseq seps guards-cnt)))
-          (progn
-            (setf guards (subseq alphabet 0 guards-cnt))
-            (setf seps (subseq alphabet guards-cnt)))))
+          (setf guards (subseq seps 0 guards-cnt)
+                seps (subseq seps guards-cnt))
+          (setf guards (subseq alphabet 0 guards-cnt)
+                alphabet (subseq alphabet guards-cnt))))
     (values alphabet seps guards)))
-
-
 
 (defun reorder (alphabet salt)
   "Shuffle alphabet by given salt"
@@ -109,7 +105,6 @@
                                    guards-len))
                    (guard (aref guards guard-idx)))
               (setf ret (strcat ret (string guard)))))))
-      (break alphabet)
       (let ((split-at (floor (length alphabet) 2))
             (excess 0))
         (loop :while (< (length ret) *min-hash-length*)
