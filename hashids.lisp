@@ -69,8 +69,8 @@
   "Hash given input value"
   (let ((alpha-len (length alphabet)))
     (loop :for c :across hash
-          :for pos := (position c alphabet)
-          :for res := 0 :then (+ pos (* res alpha-len))
+          :for pos := (or (position c alphabet) 0)
+          :for res := pos :then (+ pos (* res alpha-len))
           :finally (return res))))
 
 (defun encode (&rest numbers)
@@ -91,15 +91,14 @@
             :for alpha-salt := (subseq (strcat (string lottery) *salt* alphabet)
                                        0 (length alphabet))
             :for ab := (reorder (or ab alphabet) alpha-salt)
-            :for last := (hash num alphabet)
-            :do (setf ret (strcat ret last))
+            :for last := (hash num ab)
+            :do (setf ret (strcat ret last)
+                      alphabet ab)
             :when (< (1+ i) numbers-len)
-              :do (progn
-                    (setf alphabet ab)
-                    (setf ret (strcat ret
-                                      (string (aref seps
-                                                    (mod (+ i (char-code (first-char last)))
-                                                         seps-len)))))))
+              :do (setf num (mod num (+ i (char-code (first-char last))))
+                        ret (strcat ret
+                                    (string (aref seps
+                                                  (mod num seps-len))))))
       (when (< (length ret) *min-hash-length*)
         (let* ((guard-idx (mod (+ num-ihash (char-code (first-char ret)))
                                guards-len))
