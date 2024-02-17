@@ -56,13 +56,14 @@
 
 (defun hash (val alphabet)
   "Hash given input value"
-  (let ((alpha-len (length alphabet)))
+  (let ((alpha-len (length alphabet))
+        (hash ""))
     (loop
-      :for i := val :then (floor i alpha-len)
-      :for hash := (strcat (string (aref alphabet (mod i alpha-len)))
-                           hash)
-      :when (= i 0)
-        :return hash)))
+      :for v := val :then (floor v alpha-len)
+      :while (> v 0)
+      :do (setf hash (strcat (string (aref alphabet (mod v alpha-len)))
+                             hash)))
+    hash))
 
 (defun unhash (hash alphabet)
   "Hash given input value"
@@ -110,12 +111,13 @@
                    (guard (aref guards guard-idx)))
               (setf ret (strcat ret (string guard)))))))
       (break alphabet)
-      (let ((split-at (floor (length alphabet) 2)))
+      (let ((split-at (floor (length alphabet) 2))
+            (excess 0))
         (loop :while (< (length ret) *min-hash-length*)
-              :for alphabet := (reorder alphabet alphabet)
-              :for ret := (strcat (subseq alphabet split-at) ret (subseq alphabet 0 split-at))
-              :for excess := (- (length ret) *min-hash-length*)
+              :do (setf alphabet (reorder alphabet alphabet)
+                        ret (strcat (subseq alphabet split-at) ret (subseq alphabet 0 split-at))
+                        excess (- (length ret) *min-hash-length*))
               :when (plusp excess)
-                :do (setf ret (subseq ret (floor excess 2) *min-hash-length*))
-              :do (break ret)
-              :finally (break ret))))))
+                :do (setf ret (subseq ret (floor excess 2) (+ (floor excess 2) *min-hash-length*)))))
+      ret)))
+
