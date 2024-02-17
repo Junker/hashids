@@ -1,4 +1,4 @@
-(defsystem "hashids"
+(defsystem hashids
   :version "0.1.0"
   :author "Dmitrii Kosenkov"
   :license "MIT"
@@ -7,4 +7,5 @@
   :homepage "https://github.com/Junker/hashids"
   :source-control (:git "https://github.com/Junker/hashids.git")
   :components ((:file "package")
-               (:file "hashids")))
+               (:file "hashids"))
+  :in-order-to ((test-op (test-op :hashids-test))))
