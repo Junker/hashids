@@ -16,34 +16,34 @@ This system can be installed from [UltraLisp](https://ultralisp.org/) like this:
 ## Usage
 
 ```common-lisp
-(defvar *id* (encode 1 2 3)) ; o2fXhV
-(decode *id*) ; (1 2 3)
+(defvar *id* (hashids:encode 1 2 3)) ; o2fXhV
+(hashids:decode *id*) ; (1 2 3)
 ```
 
 Making your output ids unique:
 
 ```common-lisp
 (let ((hashids:*salt* "My Project"))
-  (encode 1 2 3)) ; Z4UrtW
+  (hashids:encode 1 2 3)) ; Z4UrtW
 
 (let ((hashids:*salt* "My Other Project"))
-  (encode 1 2 3)) ; gPUasb
+  (hashids:encode 1 2 3)) ; gPUasb
 ```
 
 Use padding to make your output ids longer:
 
 ```common-lisp
-(encode 1) ; jR
+(hashids:encode 1) ; jR
 
 (let ((hashids:*min-hash-length* 10))
-  (encode 1)) ; VolejRejNm
+  (hashids:encode 1)) ; VolejRejNm
 ```
 
 Using a custom alphabet:
 
 ```common-lisp
 (let ((hashids:*alphabet* "abcdefghijklmnopqrstuvwxyz"))
-  (encode 1 2 3)) ; mdfphx
+  (hashids:encode 1 2 3)) ; mdfphx
 ```
 
 ## Curse words! #$%@
